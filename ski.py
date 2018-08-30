@@ -6,7 +6,7 @@ class Area:
         # the location coordinates (x, y) corresponding to the
         # row (x) and column (y) numbers on the Map (both 0-indexed)
         # TODO: the position can be tracked by the indexes of the Area in ski_map
-        # TODO: decide whether to remove x & y later
+        # TODO: keep x & y for easier debugging first, can be removed later
         self.x = x
         self.y = y
 
@@ -48,6 +48,9 @@ def prepare_map(file_name):
 
         area_row = []
         for j in range(column):
+            # range check for height -> [0, 1500]
+            if input_row[j] < 0 or input_row[j] > 1500:
+                raise Exception("Area({}, {}) - Height = {} is out of range".format(i, j, input_row[j]))
             area_row.append(Area(i, j, input_row[j]))
 
         ski_map.append(area_row)
@@ -56,6 +59,7 @@ def prepare_map(file_name):
 
 
 def main():
+    # ski_map is a list of lists (similar to a matrix) with size row x column, where each item is an Area
     ski_map, row, column = prepare_map("input.txt")
 
     for i in range(row):
