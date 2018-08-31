@@ -73,18 +73,27 @@ def main():
     max_drop = -1
 
     def visit_area(area, x, y):
-        if area.b_visited:  # the area has already been visited
+        # an helper function to update path_length and bottom_height
+        def update_parameters(new_length, new_bottom):
+            if area.path_length < new_length:
+                area.path_length = new_length
+                area.bottom_height = new_bottom
+            elif area.path_length == new_length:
+                area.bottom_height = min(new_bottom, area.bottom_height)
+
+        # if an Area has already been visited, the parameters are up-to-date
+        if area.b_visited:
             return
 
         # start to visit neighbours
         # 1. North
         if x == 0 or area.height <= ski_map[x - 1][y].height:
-            north_length = 1
-            north_bottom = area.height
+            area.path_length = 1
+            area.bottom_height = area.height
         else:
             visit_area(ski_map[x - 1][y], x - 1, y)
-            north_length = ski_map[x - 1][y].path_length + 1
-            north_bottom = ski_map[x - 1][y].bottom_height
+            area.path_length = ski_map[x - 1][y].path_length + 1
+            area.bottom_height = ski_map[x - 1][y].bottom_height
 
         # 2. East
         if y == (column - 1) or area.height <= ski_map[x][y + 1].height:
@@ -95,22 +104,29 @@ def main():
             east_length = ski_map[x][y + 1].path_length + 1
             east_bottom = ski_map[x][y + 1].bottom_height
 
-        if north_length >= east_length:
-            area.path_length = north_length
-            if north_length == east_length:
-                area.bottom_height = min(east_bottom, north_bottom)
-            else:
-                area.bottom_height = north_bottom
-        else:
-            area.path_length = east_length
-            area.bottom_height = east_bottom
-
+        update_parameters(east_length, east_bottom)
 
         # 3. South
-        #TODO
+        if x == (row - 1) or area.height <= ski_map[x + 1][y].height:
+            south_length = 1
+            south_bottom = area.height
+        else:
+            visit_area(ski_map[x + 1][y], x + 1, y)
+            south_length = ski_map[x + 1][y].path_length + 1
+            south_bottom = ski_map[x + 1][y].bottom_height
+
+        update_parameters(south_length, south_bottom)
 
         # 4. West
-        #TODO
+        if y == 0 or area.height <= ski_map[x][y - 1].height:
+            west_length = 1
+            west_bottom = area.height
+        else:
+            visit_area(ski_map[x][y - 1], x, y - 1)
+            west_length = ski_map[x][y - 1].path_length + 1
+            west_bottom = ski_map[x][y - 1].bottom_height
+
+        update_parameters(west_length, west_bottom)
 
         area.b_visited = True
 
