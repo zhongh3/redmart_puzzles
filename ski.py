@@ -1,6 +1,3 @@
-import sys
-
-
 class Area:
     # an Area is a point on the Map
     def __init__(self, x=-1, y=-1, height=-1):
@@ -34,7 +31,7 @@ class Area:
 
 
 def prepare_map(file_name):
-    # parse input file and convert every input value to an Area
+    # parse input file to get the height of each Area
     # open the input file for reading
     file = open(file_name, "r")
 
@@ -43,6 +40,9 @@ def prepare_map(file_name):
 
     print("row = {}, column = {}".format(row, column))
 
+    # ski_map is a list of lists where each entry is an Area object
+    # the indexes of the entry denotes the location on the map
+    # i.e. area = ski_map[i][j] ==> area.x = i; area.y = j
     ski_map = []
 
     for i in range(row):
@@ -79,7 +79,7 @@ def main():
         if area.b_visited:
             return
 
-        # start to visit neighbours
+        # start to visit neighbours in clockwise order
         # 1. North
         if x == 0 or area.height <= ski_map[x - 1][y].height:
             area.path_length = 1
@@ -126,7 +126,7 @@ def main():
 
         return
 
-    # ski_map is a list of lists (similar to a matrix) with size row x column, where each item is an Area
+    # ski_map is a list of lists with size row x column, where each entry is an Area
     ski_map, row, column = prepare_map("input.txt")
 
     max_length = -1
@@ -137,11 +137,11 @@ def main():
             area = ski_map[i][j]
             visit_area(area, i, j)                    
             if max_length < area.path_length:
-                # print(area)
+                print(area)
                 max_length = area.path_length
                 max_drop = area.height - area.bottom_height
             elif max_length == area.path_length:
-                # print(area)
+                print(area)
                 max_drop = max(area.height - area.bottom_height, max_drop)
 
     print("max length = {}, max drop = {}".format(max_length, max_drop))
