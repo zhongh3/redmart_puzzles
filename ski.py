@@ -66,12 +66,6 @@ def prepare_map(file_name):
 
 
 def main():
-    # ski_map is a list of lists (similar to a matrix) with size row x column, where each item is an Area
-    ski_map, row, column = prepare_map("input.txt")
-
-    max_length = -1
-    max_drop = -1
-
     def visit_area(area, x, y):
         # an helper function to update path_length and bottom_height
         def update_parameters(new_length, new_bottom):
@@ -132,17 +126,23 @@ def main():
 
         return
 
+    # ski_map is a list of lists (similar to a matrix) with size row x column, where each item is an Area
+    ski_map, row, column = prepare_map("input.txt")
+
+    max_length = -1
+    max_drop = -1
+
     for i in range(row):
         for j in range(column):
-            a = ski_map[i][j]
-            visit_area(a, i, j)
-            if a.path_length >= max_length:
-                max_length = a.path_length
-                drop = a.height - a.bottom_height
-                if drop > max_drop:
-                    max_drop = drop
-
-            print(a)
+            area = ski_map[i][j]
+            visit_area(area, i, j)                    
+            if max_length < area.path_length:
+                # print(area)
+                max_length = area.path_length
+                max_drop = area.height - area.bottom_height
+            elif max_length == area.path_length:
+                # print(area)
+                max_drop = max(area.height - area.bottom_height, max_drop)
 
     print("max length = {}, max drop = {}".format(max_length, max_drop))
 
