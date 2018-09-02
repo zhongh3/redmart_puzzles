@@ -34,3 +34,6 @@ Results: max length = 5, drop = 8
 ```python
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
 ```
+
+## Information
+The code is written and tested in Python 3.7 only.
