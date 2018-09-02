@@ -1,3 +1,7 @@
+import logging
+logging.basicConfig(level=logging.DEBUG, format='%(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
+
+
 class Area:
     # an Area is a point on the Map
     def __init__(self, x=-1, y=-1, height=-1):
@@ -38,7 +42,7 @@ def prepare_map(file_name):
     # the 1st line of the input file indicates the size of the map (row and column)
     row, column = map(int, file.readline().strip().split(" "))
 
-    print("row = {}, column = {}".format(row, column))
+    logging.debug("row = {}, column = {}".format(row, column))
 
     # ski_map is a list of lists where each entry is an Area object
     # the indexes of the entry denotes the location on the map
@@ -67,8 +71,9 @@ def prepare_map(file_name):
 
 def main():
     def visit_area(area, x, y):
-        # an helper function to update path_length and bottom_height
+
         def update_parameters(new_length, new_bottom):
+            # an helper function to update path_length and bottom_height
             if area.path_length < new_length:
                 area.path_length = new_length
                 area.bottom_height = new_bottom
@@ -137,11 +142,11 @@ def main():
             area = ski_map[i][j]
             visit_area(area, i, j)                    
             if max_length < area.path_length:
-                print(area)
+                logging.debug(area)
                 max_length = area.path_length
                 max_drop = area.height - area.bottom_height
             elif max_length == area.path_length:
-                print(area)
+                logging.debug(area)
                 max_drop = max(area.height - area.bottom_height, max_drop)
 
     print("max length = {}, max drop = {}".format(max_length, max_drop))
