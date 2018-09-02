@@ -2,6 +2,7 @@ import logging
 # change logging level from INFO to DEBUG to print debugging logs
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
 
+
 class Area:
     # an Area is a point on the Map
     def __init__(self, x=-1, y=-1, height=-1):
@@ -139,7 +140,7 @@ def main():
     # the minimum of max_length should be '1' and max_drop should be '0'
     # init both to negative values and update them accordingly
     max_length = -1
-    max_drop = -1
+    max_drop = -1  # the max_drop is not the maximum drop on the map, it's the drop of the path with max_length
 
     for i in range(row):
         for j in range(column):
@@ -154,7 +155,7 @@ def main():
                 logging.debug(area)
                 max_drop = max(drop, max_drop)
 
-    print("Results: max length = {}, max drop = {}".format(max_length, max_drop))
+    print("Results: max length = {}, drop = {}".format(max_length, max_drop))
 
 
 if __name__ == "__main__":
