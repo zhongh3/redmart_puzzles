@@ -1,6 +1,6 @@
 # Attempt to Solve Coding Puzzles from RedMart
 
-## Skiing in Singapore (http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/):
+## I. Skiing in Singapore (http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/):
 
 ### Description:
 In digital form the map looks like the number grid below.
@@ -35,5 +35,8 @@ Results: max length = 5, drop = 8
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
 ```
 
-## Information
+### Information
 The code is written and tested in Python 3.7 only.
+
+## II. 1,000,000th Customer Prize (http://geeks.redmart.com/2015/10/26/1000000th-customer-prize-another-programming-challenge/):
+working in progress...
