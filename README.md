@@ -22,15 +22,16 @@ There is another path that is also length five: **8-5-3-2-1**. However the tie i
 Your challenge is to write a program in your favorite programming language to find the longest (and then steepest) path on this map specified in the format above. It’s 1000x1000 in size, and all the numbers on it are between 0 and 1500.
 
 ### Instructions:
-1. The default map is from _./input.txt_. To change the input file, please replace the _./input.txt_ or change the source code in _main()_:
+1. The solution is in **ski.py**.
+2. The default map is from _./input.txt_. To change the input file, please replace the _./input.txt_ or change the source code in _main()_:
 ```python
 ski_map, row, column = prepare_map("input.txt")
 ```
-2. As the challenge is to find the longest (and then steepest) path on this map, the solution only provides the length of the path and its steepness (i.e. the drop from the starting area to the ending area). It didn't record the entire path. The results are printed as (take the example from the **Description**)
+3. As the challenge is to find the longest (and then steepest) path on this map, the solution only provides the length of the path and its steepness (i.e. the drop from the starting area to the ending area). It didn't record the entire path. The results are printed as (take the example from the **Description**)
 ```
 Results: max length = 5, drop = 8
 ```
-3. To print debugging logs, simply change logging level from **logging.INFO** to **logging.DEBUG**:
+4. To print debugging logs, simply change logging level from **logging.INFO** to **logging.DEBUG**:
 ```python
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
 ```
