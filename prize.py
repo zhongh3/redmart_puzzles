@@ -156,10 +156,11 @@ def process_input(csv_file_name):
 
 
 def main():
+    print("Working in progress......")
     products, min_volume = process_input("./products.csv")
 
-    for item in products:
-        print(item)
+    # for item in products:
+    #     print(item)
 
 
 if __name__ == "__main__":
