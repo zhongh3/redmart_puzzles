@@ -22,7 +22,7 @@ class Idx(IntEnum):
 tote_volume = 45 * 30 * 35  # 47250 cm3
 
 # To control the number of rows to read from the input file (for debugging use)
-num_rows = 10  # set to None to read the whole file
+num_rows = None  # set to None to read the whole file
 
 
 class Product:
@@ -69,8 +69,8 @@ class Product:
 
 class Basket:
     # a basket is a collection of products who can fit into the tote all together
-    def __init__(self, first):
-        self.b_id = first.p_id  # use the ID of the first product as the ID of the basket
+    def __init__(self, first, first_idx):
+        self.b_id = first_idx  # use the index of the first product as the ID of the basket
         self.volume = tote_volume  # total volume of the basket (cm3)
 
         self.items = [first]  # first is the 1st product added into the basket
@@ -78,6 +78,7 @@ class Basket:
         self.space = self.volume - first.volume  # remaining space in the basket (cm3)
         self.value = first.price  # the total value of all products in the basket
         self.weight = first.weight  # the total weight of all products in the basket
+        self.id_sum = first.p_id  # the sum of product ID of all products in the basket
 
     def add_product(self, new_product):
         if self.space >= new_product.volume:  # only add the new product if it fits into the basket
@@ -86,18 +87,34 @@ class Basket:
             self.space -= new_product.volume
             self.value += new_product.price
             self.weight += new_product.weight
-        else:
-            raise Exception("Failed to add new product (ID={})into the basket ID={}".format(new_product.p_id, self.b_id))
+            self.id_sum += new_product.p_id
+            logging.debug("Added new product (ID={})into the basket ID={}".format(new_product.p_id, self.b_id))
+            return True
 
-        logging.debug("Added new product (ID={})into the basket ID={}".format(new_product.p_id, self.b_id))
+        logging.debug("Failed to add new product (ID={})into the basket ID={}".format(new_product.p_id, self.b_id))
+        return False
+
+    def __lt__(self, other):
+        if self.value < other.value:
+            # higher total value wins
+            return True
+        if self.value == other.value:
+            if self.weight > other.weight:
+                # with same total value, lighter weight is preferred
+                return True
+            elif self.weight == other.weight:
+                raise Exception("Found Basket IDs: {} and {} with same values and weight.".
+                                format(self.b_id, other.b_id))
+        return False
 
     def __str__(self):
-        return "Basket ID: {} - no. of products={}, remaining space={}, total value={}, total weight={}".\
-            format(self.b_id, self.num_items, self.space, self.value, self.weight)
+        return "Basket ID: {} - total {} products, space left={}, total value={}, total weight={}, ID sum={}".\
+            format(self.b_id, self.num_items, self.space, self.value, self.weight, self.id_sum)
 
     def print_content(self):
-        # to print all products in the basket
-        print("Basket ID: {} - total {} products".format(self.b_id, self.num_items))
+        # to print detailed information of the basket, including all products in the basket
+        print("Basket ID: {} - total {} products, space left={}, total value={}, total weight={}, ID sum={}".
+              format(self.b_id, self.num_items, self.space, self.value, self.weight, self.id_sum))
         for i in range(self.num_items):
             print("{} - {}".format(i + 1, self.items[i]))
 
@@ -155,12 +172,45 @@ def process_input(csv_file_name):
     return products, min_volume
 
 
+def fill_a_basket(products, first_idx, min_volume):
+    b = Basket(products[first_idx], first_idx)
+
+    last_idx = -1
+    for i in range(first_idx+1, len(products)):
+        if b.space < min_volume:
+            print("Basket ID: {} is full".format(b.b_id))
+            print(b)
+            # b.print_content()
+            return b, last_idx
+        if b.add_product(products[i]):
+            last_idx = i
+
+    print("Finished filling Basket ID: {}".format(b.b_id))
+    b.print_content()
+    # print(b)
+    return b, last_idx
+
+
 def main():
     print("Working in progress......")
     products, min_volume = process_input("./products.csv")
 
-    # for item in products:
-    #     print(item)
+    basket, last_idx = fill_a_basket(products, 0, min_volume)
+    print("The last product added to the Basket ID: {} has idx = {}".format(basket.b_id, last_idx))
+
+    # a list of candidate baskets
+    baskets = [basket]
+
+    for i in range(1, last_idx):
+        b, lst_idx = fill_a_basket(products, i, min_volume)
+        baskets.append(b)
+        # logging.info("Basket ID: {} last idx = {}".format(b.b_id, lst_idx))
+
+    baskets.sort(reverse=True)  # the basket with highest total value is at index 0
+
+    # baskets[0].print_content()
+
+    print("Sum of Product IDs = {}".format(baskets[0].id_sum))
 
 
 if __name__ == "__main__":
