@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import csv
 from enum import IntEnum
 
 import logging
@@ -172,6 +173,18 @@ def process_input(csv_file_name):
     return products, min_volume
 
 
+def write_to_csv(products, num_lines):
+    # utility function to output sorted candidate products to csv
+    # num_lines: the number of products to write to csv
+
+    with open('sorted_candidate_products.csv', 'w') as csv_file:
+        csv_writer = csv.writer(csv_file,)
+        csv_writer.writerow(["index", "product id", "value", "unit price", "volume", "weight"])
+        for i in range(num_lines):
+            csv_writer.writerow([i, products[i].p_id, products[i].price, products[i].unit_price,
+                                 products[i].volume, products[i].weight])
+
+
 def fill_a_basket(products, first_idx, min_volume):
     b = Basket(products[first_idx], first_idx)
 
@@ -198,21 +211,25 @@ def main():
     basket, last_idx = fill_a_basket(products, 0, min_volume)
     print("The last product added to the Basket ID: {} has idx = {}".format(basket.b_id, last_idx))
 
-    # a list of candidate baskets
-    baskets = [basket]
+    write_to_csv(products, last_idx)
 
-    for i in range(1, last_idx):
-        b, lst_idx = fill_a_basket(products, i, min_volume)
-        baskets.append(b)
-        # logging.info("Basket ID: {} last idx = {}".format(b.b_id, lst_idx))
-
-    baskets.sort(reverse=True)  # the basket with highest total value is at index 0
-
+    # # a list of candidate baskets
+    # baskets = [basket]
+    #
+    # # for i in range(1, last_idx):
+    # #     b, lst_idx = fill_a_basket(products, i, min_volume)
+    # #     baskets.append(b)
+    # #     # logging.info("Basket ID: {} last idx = {}".format(b.b_id, lst_idx))
+    #
+    # baskets.sort(reverse=True)  # the basket with highest total value is at index 0
+    #
     # baskets[0].print_content()
-
-    print("Sum of Product IDs = {}".format(baskets[0].id_sum))
+    #
+    # print("Sum of Product IDs = {}".format(baskets[0].id_sum))
 
 
 if __name__ == "__main__":
     main()
 
+# Ans: totalPrice=41298, totalWeight=32077, sumOfId=450166
+# Basket ID: 0 - total 23 products, space left=140, total value=41032, total weight=35446, ID sum=466455
