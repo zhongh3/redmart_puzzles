@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import csv
 from enum import IntEnum
 
@@ -30,9 +29,9 @@ class Product:
     def __init__(self, record=None):
         self.p_id = int(record.iloc[Idx.p_id])         # product id
         self.price = int(record.iloc[Idx.price])       # price (cent)
-        self.length = int(record.iloc[Idx.length])     # length (cm)
-        self.width = int(record.iloc[Idx.width])       # width (cm)
-        self.height = int(record.iloc[Idx.height])     # height (cm)
+        self.length = int(record.iloc[Idx.length])     # length (cm) - it's ok to discard this info
+        self.width = int(record.iloc[Idx.width])       # width (cm) - it's ok to discard this info
+        self.height = int(record.iloc[Idx.height])     # height (cm) - it's ok to discard this info
         self.weight = int(record.iloc[Idx.weight])     # weight (g)
         self.volume = int(record.iloc[Idx.volume])     # volume (cm3)
         self.unit_price = record.iloc[Idx.unit_price]  # price per cubic centimeter = price/volume (cent/cm3)
@@ -58,9 +57,8 @@ class Product:
                 return True
 
         # if all 3 values are the same, the order of the 2 products doesn't matter for our use case
+        # print the log just for information
         # default self < other to 'False' in this case
-
-        # TODO: remove later
         if self.unit_price == other.unit_price and self.volume == other.volume and self.weight == other.weight:
             logging.info("Product ID {} and ID {} share same unit price, volume and weight".
                          format(self.p_id, other.p_id))
@@ -73,7 +71,6 @@ class Basket:
     def __init__(self, first, first_idx, volume=tote_volume):
         self.b_id = first_idx  # use the index of the first product as the ID of the basket
         self.volume = volume  # total volume of the basket (cm3)
-
         self.items = [first]  # first is the 1st product added into the basket
         self.num_items = len(self.items)  # number of items in the basket
         self.space = self.volume - first.volume  # remaining space in the basket (cm3)
@@ -81,7 +78,7 @@ class Basket:
         self.weight = first.weight  # the total weight of all products in the basket
         self.id_sum = first.p_id  # the sum of product ID of all products in the basket
 
-    def add_product(self, new_product):
+    def add_a_product(self, new_product):
         if self.space >= new_product.volume:  # only add the new product if it fits into the basket
             self.items.append(new_product)
             self.num_items += 1
@@ -96,8 +93,11 @@ class Basket:
         return False
 
     def add_a_pair(self, products, pair_idx):
-        self.add_product(products[pair_idx[0]])
-        self.add_product(products[pair_idx[1]])
+        if pair_idx[0] == pair_idx[1]:
+            self.add_a_product(products[pair_idx[0]])
+        else:
+            self.add_a_product(products[pair_idx[0]])
+            self.add_a_product(products[pair_idx[1]])
 
     def remove_last_product(self):
         if self.num_items >= 0:
@@ -140,6 +140,36 @@ class Basket:
               format(self.b_id, self.num_items, self.space, self.value, self.weight, self.id_sum))
         for i in range(self.num_items):
             print("{} - {}".format(i + 1, self.items[i]))
+
+    def fill_a_basket(self, products, start_idx, min_volume):
+        # trying to add products into the basket
+        # start the search from the product at index 'start_idx'
+
+        idx_1 = -1  # keep track of the 1st index to failed
+        idx_2 = -1  # keep track of the 1st index that succeeded after the 1st failure
+
+        for i in range(start_idx, len(products)):
+            if self.space < min_volume:
+                print("Basket ID: {} is full".format(self.b_id))
+                print(self)
+                return [idx_1, idx_2]
+
+            if not self.add_a_product(products[i]):  # failed to add current product into the basket
+                idx_1 = i
+                break
+
+        if idx_1 > -1:  # the 1st failure has happened
+            for i in range(idx_1 + 1, len(products)):
+                if self.space < min_volume:
+                    print("Basket ID: {} is full".format(self.b_id))
+                    print(self)
+                    return [idx_1, idx_2]
+
+                if self.add_a_product(products[i]):  # this is the 1st success after the 1st failure
+                    idx_2 = i
+                    break
+
+        return [idx_1, idx_2]
 
 
 def process_input(csv_file_name):
@@ -207,66 +237,25 @@ def write_to_csv(products, num_lines):
                                  products[i].volume, products[i].weight])
 
 
-def fill_a_basket(products, first_idx, min_volume):
-    b = Basket(products[first_idx], first_idx)
+def find_the_best_pair(products, start_idx, end_idx, max_value, space):
+    # TODO: incomplete solution
+    # it's possible for the better combination to be a single product, a pair or even more products
+    # this solution here only looks for a single product or a pair, that's why it's incomplete
 
-    last_idx = -1
-    for i in range(first_idx+1, len(products)):
-        if b.space < min_volume:
-            print("Basket ID: {} is full".format(b.b_id))
-            # b.print_content()
-            print(b)
-            return b, last_idx
-        if b.add_product(products[i]):
-            last_idx = i
-
-    print("Finished filling Basket ID: {}".format(b.b_id))
-    # b.print_content()
-    print(b)
-    return b, last_idx
-
-
-def fill_a_basket_new(basket, products, first_idx, min_volume):
-
-    idx_1 = -1  # keep track of the 1st index to failed
-    idx_2 = -1  # keep track of the 1st index that succeeded after the 1st failure
-
-    for i in range(first_idx, len(products)):
-        if basket.space < min_volume:
-            print("Basket ID: {} is full".format(basket.b_id))
-            print(basket)
-            return idx_1, idx_2
-
-        if not basket.add_product(products[i]):  # failed to add current product into the basket
-            idx_1 = i
-            break
-
-    if idx_1 > -1:
-        for i in range(idx_1+1, len(products)):
-            if basket.space < min_volume:
-                print("Basket ID: {} is full".format(basket.b_id))
-                print(basket)
-                return idx_1, idx_2
-
-            if basket.add_product(products[i]):
-                idx_2 = i
-                break
-
-    return idx_1, idx_2
-
-
-def find_the_best_pair(products, start_idx, end_idx, space):
-    max_value = 0
     pair = []
     for i in range(start_idx, end_idx+1):
         if products[i].volume > space:
             continue
+        if products[i].price > max_value:  # a single product is better than the pair
+            max_value = products[i].price
+            pair = [i, i]
+            return max_value, pair
+
         space_left = space - products[i].volume
         for j in range(i+1, end_idx+1):
             if products[j].volume <= space_left:
-                # i & j is a couple
                 total_value = products[i].price + products[j].price
-                if total_value > max_value:
+                if total_value > max_value:  # a better pair is found
                     max_value = total_value
                     pair = [i, j]
 
@@ -277,31 +266,37 @@ def main():
     print("Working in progress......")
     products, min_volume = process_input("./products.csv")
 
-    # write_to_csv(products, last_idx)
+    # write_to_csv(products, 54)
 
     basket = Basket(products[0], 0)
 
     pair_idx = [0, 0]
 
     while basket.space >= min_volume:
-        idx_1st_failed, idx_last_succeeded = fill_a_basket_new(basket, products, pair_idx[1]+1, min_volume)
+        # pair_idx[0]: the 1st index to failed
+        # pair_idx[1]: the 1st index that succeeded after the 1st failure
+        pair_idx = basket.fill_a_basket(products, pair_idx[1]+1, min_volume)
 
-        logging.info("idx_1st_failed = {}, idx_last_succeeded ={}".format(idx_1st_failed, idx_last_succeeded))
+        logging.info("1st index to fail = {}, 1st index to succeed after 1st failure = {}".
+                     format(pair_idx[0], pair_idx[1]))
 
-        if idx_1st_failed == -1 or idx_last_succeeded == -1:
+        if pair_idx[0] == -1 or pair_idx[1] == -1:
             break
 
-        logging.info("last pair_value = {}, pair = {}".
-                     format(products[idx_1st_failed-1].price+products[idx_last_succeeded].price,
-                            [idx_1st_failed-1, idx_last_succeeded]))
+        pair_value = products[pair_idx[0]-1].price+products[pair_idx[1]].price
+
+        logging.info("last pair_value = {}, pair = {}".format(pair_value, [pair_idx[0]-1, pair_idx[1]]))
 
         basket.remove_last_pair()
 
-        pair_value, pair_idx = find_the_best_pair(products, idx_1st_failed-1, idx_last_succeeded, basket.space)
+        # pair_idx[0]: the 1st index of the best pair
+        # pair_idx[1]: the 2nd index of the best pair
+        pair_value, pair_idx = find_the_best_pair(products, pair_idx[0]-1, pair_idx[1], pair_value, basket.space)
 
         logging.info("best pair_value = {}, pair = {}".format(pair_value, pair_idx))
 
         basket.add_a_pair(products, pair_idx)
+        # continue the search after the last product added into the basket, i.e. pair_idx[1]+1
 
     # basket.print_content()
     print(basket)
