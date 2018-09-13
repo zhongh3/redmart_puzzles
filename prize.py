@@ -58,8 +58,8 @@ class Product:
 
 
 class BestState:
-    def __init__(self, space):
-        self.space = space
+    def __init__(self, space, min_volume):
+        self.space = 0 if space == 0 else space + min_volume - 1
         self.id_sum = 0
         self.value = 0
         self.weight = 0
@@ -172,38 +172,37 @@ def main():
 
     # write_to_csv(products, len(products)-1)
 
-    # TODO: optimize
-    # TODO: reduce table size by min_volume - (len(products) + 1) x (tote_volume - min_volume + 1)
-    # create a table of size (len(products) + 1) x (tote_volume + 1) to save the BestStates
-    table = [[BestState(i) for i in range(tote_volume + 1)] for j in range(len(products) + 1)]
+    # originally: need a table of size (len(products) + 1) x (tote_volume - 1) to save the BestStates
+    # optimization: (saving in both computation time and space)
+    #   reduce the table size by (min_volume - 1) columns, since nothing can fit if the space is less than min_volume
+    # finally: table size = (len(products) + 1) x (tote_volume - min_volume + 2)
+    table = [[BestState(i, min_volume) for i in range(tote_volume - min_volume + 2)] for j in range(len(products) + 1)]
 
     for i in range(1, len(table)):
-        for j in range(1, tote_volume + 1):
+        for j in range(1, tote_volume - min_volume + 2):
             x = j - products[i-1].volume
             table[i][j].update_state(table[i-1][j], table[i-1][max(0, x)], products[i-1])
 
-    final = table[len(products)][tote_volume]
+    final = table[len(products)][tote_volume - min_volume + 1]
 
     print("best total value = {}, weight = {}, ID sum = {}".
           format(final.value, final.weight, final.id_sum))
 
     # find the products in the tote
     tote = []
-    j = tote_volume
+    j = tote_volume - min_volume + 1
     for i in range(len(products), 0, -1):
         if table[i][j].value != table[i-1][j].value:
             tote.append(products[i-1])
             x = j - products[i-1].volume
             j = max(0, x)
 
-    print("total number of products in the tote = {}".format(len(tote)))
-
     total_volume = 0
     for i in range(len(tote)-1, -1, -1):
         # print(tote[i].p_id)
         total_volume += tote[i].volume
 
-    print("total volume = {}".format(total_volume))
+    print("total number of products in the tote = {}, total volume used = {}".format(len(tote), total_volume))
 
 
 if __name__ == "__main__":
