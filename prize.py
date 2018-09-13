@@ -164,15 +164,16 @@ def write_to_csv(products, num_lines):
 
 
 def main():
-    print("Working in progress......")
     products, min_volume = process_input("./products.csv")
 
-    # write_to_csv(products, 100)
-    # TODO: take the first 100 products for testing only
-    products = products[0:100]
+    max_num = tote_volume//min_volume
+    logging.info("max number of products in the tote = {}".format(max_num))
 
-    # num_bins = max no. of products that can fit into the tote
-    # num_bins = -(-tote_volume//min_volume)  # ceiling division
+    # since products are already sorted according to unit price
+    # search the top candidates (3 times of the max_num) instead of the complete list
+    products = products[0: max_num * 3]  # to search the whole list, skip this line
+
+    # write_to_csv(products, len(products)-1)
 
     # create a table of size (len(products) + 1) x (tote_volume + 1) to save the BestStates
     table = [[BestState(i) for i in range(tote_volume + 1)] for j in range(len(products) + 1)]
