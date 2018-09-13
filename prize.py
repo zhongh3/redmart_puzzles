@@ -60,7 +60,6 @@ class Product:
 class BestState:
     def __init__(self, space):
         self.space = space
-        self.volume = 0
         self.id_sum = 0
         self.value = 0
         self.weight = 0
@@ -79,7 +78,6 @@ class BestState:
         return False
 
     def __set_state(self, state):
-        self.volume = state.volume
         self.id_sum = state.id_sum
         self.value = state.value
         self.weight = state.weight
@@ -89,7 +87,6 @@ class BestState:
             self.__set_state(state1)
         elif state2.value + product.value > state1.value or \
                 (state2.value + product.value == state1.value and state2.weight + product.weight < state1.weight):
-                self.volume = state2.volume + product.volume
                 self.id_sum = state2.id_sum + product.p_id
                 self.value = state2.value + product.value
                 self.weight = state2.weight + product.weight
@@ -175,6 +172,8 @@ def main():
 
     # write_to_csv(products, len(products)-1)
 
+    # TODO: optimize
+    # TODO: reduce table size by min_volume - (len(products) + 1) x (tote_volume - min_volume + 1)
     # create a table of size (len(products) + 1) x (tote_volume + 1) to save the BestStates
     table = [[BestState(i) for i in range(tote_volume + 1)] for j in range(len(products) + 1)]
 
@@ -185,8 +184,26 @@ def main():
 
     final = table[len(products)][tote_volume]
 
-    print("Best value = {}, weight = {}, volume = {}, ID sum = {}".
-          format(final.value, final.weight, final.volume, final.id_sum))
+    print("best total value = {}, weight = {}, ID sum = {}".
+          format(final.value, final.weight, final.id_sum))
+
+    # find the products in the tote
+    tote = []
+    j = tote_volume
+    for i in range(len(products), 0, -1):
+        if table[i][j].value != table[i-1][j].value:
+            tote.append(products[i-1])
+            x = j - products[i-1].volume
+            j = max(0, x)
+
+    print("total number of products in the tote = {}".format(len(tote)))
+
+    total_volume = 0
+    for i in range(len(tote)-1, -1, -1):
+        # print(tote[i].p_id)
+        total_volume += tote[i].volume
+
+    print("total volume = {}".format(total_volume))
 
 
 if __name__ == "__main__":
