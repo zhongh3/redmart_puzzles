@@ -157,7 +157,7 @@ def process_input(csv_file_name):
     min_volume = min(volumes)
     logging.info("min volume = {}".format(min_volume))
 
-    # add volume as a new column of inputs
+    # add volume and unit price as new columns of inputs
     inputs[Idx.volume] = pd.Series(volumes, index=inputs.index)
     inputs[Idx.unit_price] = pd.Series(unit_prices, index=inputs.index)
 
@@ -179,6 +179,7 @@ def process_input(csv_file_name):
             # the product doesn't fit into the tote
             continue
 
+        # the product can fit into the tote, add it to the candidate list
         products.append(Product(inputs.iloc[i]))
 
     logging.info("total no. of candidate products = {}".format(len(products)))
@@ -206,8 +207,9 @@ def main():
     max_num = tote_volume//min_volume
     logging.info("max number of products in the tote = {}".format(max_num))
 
-    # since products are already sorted according to unit price
-    # search the top candidates (3 times of the max_num) instead of the complete list
+    # products are already sorted according to unit price, volume and weight
+    # since there are only maximum of max_num products that can fit into the tote,
+    # search the top candidates (e.g. choose 3 times of the max_num) instead of the complete list
     products = products[0: max_num * 3]  # to search the whole list, skip this line
 
     # write_to_csv(products, len(products)-1)
@@ -225,10 +227,11 @@ def main():
 
     final = table[len(products)][tote_volume - min_volume + 1]
 
+    # the sum of IDs is already obtained in the "final" BestState
     logging.info("best total value = {}, weight = {}, ID sum = {}".
                  format(final.value, final.weight, final.id_sum))
 
-    # find the products in the tote
+    # to obtain details of products in the tote
     tote = Basket(tote_volume, "TOTE")
 
     j = tote_volume - min_volume + 1
@@ -239,7 +242,7 @@ def main():
             j = max(0, x)
 
     print(tote)
-    # tote.print_content()
+    # tote.print_content()  # to print details of content in the tote
 
 
 if __name__ == "__main__":
