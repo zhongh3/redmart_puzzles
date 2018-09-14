@@ -94,6 +94,46 @@ class BestState:
             self.__set_state(state1)
 
 
+class Basket:
+    def __init__(self, space, name=""):
+        self.name = name
+        self.items = []
+        self.num_items = 0  # number of items in the basket
+        self.capacity = space  # the total capacity of the basket (cm3)
+        self.volume = 0  # the total volume of products in the basket (cm3)
+        self.value = 0  # the total value of all products in the basket (cent)
+        self.weight = 0  # the total weight of all products in the basket (gram)
+        self.id_sum = 0  # the sum of product ID of all products in the basket
+
+    def add_a_product(self, product):
+        if self.capacity - self.volume >= product.volume:
+            self.items.append(product)
+            self.num_items += 1
+            self.volume += product.volume
+            self.value += product.value
+            self.weight += product.weight
+            self.id_sum += product.p_id
+        else:
+            print("Failed to add product ID = {}, volume = {} into the basket - remaining space = {}".
+                  format(product.p_id, product.volume, self.capacity - self.volume))
+
+    def __str__(self):
+        return "{} - total {} products, total volume = {}, total value={}, " \
+               "total weight={}, ID sum={}, space left={}".\
+            format(self.name, self.num_items, self.volume, self.value,
+                   self.weight, self.id_sum, self.capacity - self.volume)
+
+    def print_content(self):
+        # to print detailed information of the basket, including all products in the basket
+        print("{} - total {} products, total volume = {}, total value={}, "
+              "total weight={}, ID sum={}, space left={}".
+              format(self.name, self.num_items, self.volume, self.value,
+                     self.weight, self.id_sum, self.capacity - self.volume))
+
+        for i in range(self.num_items):
+            print("{} - {}".format(i + 1, self.items[i]))
+
+
 def process_input(csv_file_name):
 
     # input csv file format (no header):
@@ -185,24 +225,21 @@ def main():
 
     final = table[len(products)][tote_volume - min_volume + 1]
 
-    print("best total value = {}, weight = {}, ID sum = {}".
-          format(final.value, final.weight, final.id_sum))
+    logging.info("best total value = {}, weight = {}, ID sum = {}".
+                 format(final.value, final.weight, final.id_sum))
 
     # find the products in the tote
-    tote = []
+    tote = Basket(tote_volume, "TOTE")
+
     j = tote_volume - min_volume + 1
     for i in range(len(products), 0, -1):
         if table[i][j].value != table[i-1][j].value:
-            tote.append(products[i-1])
+            tote.add_a_product(products[i-1])
             x = j - products[i-1].volume
             j = max(0, x)
 
-    total_volume = 0
-    for i in range(len(tote)-1, -1, -1):
-        # print(tote[i].p_id)
-        total_volume += tote[i].volume
-
-    print("total number of products in the tote = {}, total volume used = {}".format(len(tote), total_volume))
+    print(tote)
+    # tote.print_content()
 
 
 if __name__ == "__main__":
