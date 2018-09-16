@@ -47,7 +47,6 @@ Given 1 tote and a list of products, the goal is to maximize the dollar value of
 
 1. The tote’s usable space is **45** centimeters long, **30** wide and **35** high.
 2. Everything you take, together, must completely fit into a tote.
-
 ##### You can assume that if the products fit into the tote both individually and together by total volume, that you'll be able to find a way to pack them in.
 
 3. A lighter tote is better, as long as you don’t sacrifice any dollar value.
@@ -56,5 +55,12 @@ Given 1 tote and a list of products, the goal is to maximize the dollar value of
 product ID, price (cent), length (cm), width (cm), height (cm), weight (g)
 ```
 5. You can only take 1 of any product. 
+6. Find the sum of product IDs of all the products you take. 
  
-
+### Instructions:
+1. The solution is in **prize.py**.
+2. Even though the challenge only asks for the sum of product IDs, the implementation also includes the algorithm to find the details of all the products in the tote.
+3. For optimization, all the candidate products (i.e. products that can fit into the tote individually) are sorted first. Only the top candidates (3 x max no. of products that can fit into the tote) are processed further. To process the whole list or change the number of top candidates, just edit the line: 
+```python
+products = products[0: max_num * 3]
+```
