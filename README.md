@@ -25,8 +25,9 @@ There is another path that is also length five: **8-5-3-2-1**. However the tie i
 Your challenge is to write a program in your favorite programming language to find the longest (and then steepest) path on this map specified in the format above. It’s 1000x1000 in size, and all the numbers on it are between 0 and 1500.
 
 ### 1.2 Instructions:
-1.2.1. The solution is in **ski.py**.
-1.2.2. The default map is from _./input.txt_. To change the input file, please replace the _./input.txt_ or change the source code in _main()_:
+1.2.1 The solution is in **ski.py**.
+
+1.2.2 The default map is from _./input.txt_. To change the input file, please replace the _./input.txt_ or change the source code in _main()_:
 ```python
 ski_map, row, column = prepare_map("input.txt")
 ```
@@ -46,20 +47,25 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(funcName)s - %
 Given 1 tote and a list of products, the goal is to maximize the dollar value of the products in the tote. Here are the rules:
 
 2.1.1. The tote’s usable space is **45** centimeters long, **30** wide and **35** high.
+
 2.1.2. Everything you take, together, must completely fit into a tote.
 ##### You can assume that if the products fit into the tote both individually and together by total volume, that you'll be able to find a way to pack them in.
 
 2.1.3. A lighter tote is better, as long as you don’t sacrifice any dollar value.
+
 2.1.4. The input file contains 20,000 products, one per line. Each line has the following fields separated by a comma:
 ```
 product ID, price (cent), length (cm), width (cm), height (cm), weight (g)
 ```
 2.1.5. You can only take 1 of any product. 
+
 2.1.6. Find the sum of product IDs of all the products you take. 
  
 ### 2.2 Instructions:
 2.2.1. The solution is in **prize.py**.
+
 2.2.2. Even though the challenge only asks for the sum of product IDs, the implementation also includes the algorithm to find the details of all the products in the tote.
+
 2.2.3. For optimization, all the candidate products (i.e. products that can fit into the tote individually) are sorted first. Only the top candidates (3 x max no. of products that can fit into the tote) are processed further. To process the whole list or change the number of top candidates, just edit the line: 
 ```python
 products = products[0: max_num * 3]
