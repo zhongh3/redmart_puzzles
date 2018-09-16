@@ -1,5 +1,8 @@
 # Attempt to Solve Coding Puzzles from RedMart
 
+### Note:
+The code is written and tested in Python 3.7 only.
+
 ## I. Skiing in Singapore (http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/):
 
 ### Description:
@@ -36,8 +39,22 @@ Results: max length = 5, drop = 8
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(funcName)s - %(lineno)d - %(message)s')
 ```
 
-### Information
-The code is written and tested in Python 3.7 only.
 
 ## II. 1,000,000th Customer Prize (http://geeks.redmart.com/2015/10/26/1000000th-customer-prize-another-programming-challenge/):
-working in progress...
+
+### Description:
+Given 1 tote and a list of products, the goal is to maximize the dollar value of the products in the tote. Here are the rules:
+
+1. The tote’s usable space is **45** centimeters long, **30** wide and **35** high.
+2. Everything you take, together, must completely fit into a tote.
+
+##### You can assume that if the products fit into the tote both individually and together by total volume, that you'll be able to find a way to pack them in.
+
+3. A lighter tote is better, as long as you don’t sacrifice any dollar value.
+4. The input file contains 20,000 products, one per line. Each line has the following fields separated by a comma:
+```
+product ID, price (cent), length (cm), width (cm), height (cm), weight (g)
+```
+5. You can only take 1 of any product. 
+ 
+
