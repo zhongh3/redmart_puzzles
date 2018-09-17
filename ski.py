@@ -135,7 +135,7 @@ def main():
 
     # ski_map is a list of lists with size row x column, where each entry is an Area
     # the indexes of each Area in ski_map is their location on the map
-    ski_map, row, column = prepare_map("input.txt")
+    ski_map, row, column = prepare_map("map.txt")
 
     # the minimum of max_length should be '1' and max_drop should be '0'
     # init both to negative values and update them accordingly
