@@ -27,9 +27,9 @@ Your challenge is to write a program in your favorite programming language to fi
 ### 1.2 Instructions:
 **1.2.1** The solution is in **ski.py**.
 
-**1.2.2** The default map is from _./input.txt_. To change the input file, please replace the _./input.txt_ or change the source code in _main()_:
+**1.2.2** The default map is from _./map.txt_. To change the input file, please replace the _./map.txt_ or change the source code in _main()_:
 ```python
-ski_map, row, column = prepare_map("input.txt")
+ski_map, row, column = prepare_map("map.txt")
 ```
 **1.2.3.** As the challenge is to find the longest (and then steepest) path on this map, the solution only provides the length of the path and its steepness (i.e. the drop from the starting area to the ending area). It didn't record the entire path. The results are printed as (take the example from the **Description**)
 ```
