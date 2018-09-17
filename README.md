@@ -1,7 +1,7 @@
 # Attempt to Solve Coding Puzzles from RedMart
 
 ### Note:
-The code is written and tested in Python 3.7 only.
+The code is written and tested in **Python 3.7** only.
 
 ## I. Skiing in Singapore (http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/):
 
